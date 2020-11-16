@@ -6,13 +6,14 @@ import {
   Accuracy
 } from 'expo-location';
 
-export default callback => {
+export default (shouldTrack, callback) => {
   const [err, setErr] = useState(null);
+  const [subscriber, setSubscriber] = useState(null);
 
   const startWatching = async () => {
     try {
       const { granted } = await requestPermissionsAsync();
-      await watchPositionAsync(
+      const sub = await watchPositionAsync(
         {
           accuracy: Accuracy.BestForNavigation,
           timeInterval: 1000,
@@ -20,6 +21,7 @@ export default callback => {
         },
         callback
       );
+      setSubscriber(sub);
       if (!granted) {
         throw new Error('Location permission not granted');
       }
@@ -29,8 +31,14 @@ export default callback => {
   };
 
   useEffect(() => {
-    startWatching();
-  }, []);
+    if (shouldTrack) {
+      startWatching();
+    } else {
+      //* stop watching
+      subscriber.remove();
+      setSubscriber(null);
+    }
+  }, [shouldTrack]);
 
   return [err];
 };
