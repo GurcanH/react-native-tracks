@@ -11,7 +11,7 @@ const TrackForm = () => {
     stopRecording,
     changeName
   } = useContext(LocationContext);
-  console.log(locations.length);
+
   return (
     <>
       <Input value={name} onChangeText={changeName} placeholder='Enter name' />
